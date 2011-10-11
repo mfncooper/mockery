@@ -1,0 +1,25 @@
+{
+  "author": "Martin Cooper <mfncooper@gmail.com>",
+  "name": "mockery",
+  "description": "Simplifying the use of mocks with Node.js",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mfncooper/mockery.git"
+  },
+  "bugs": {
+    "url" : "http://github.com/mfncooper/mockery/issues"
+  },
+  "main": "mockery.js",
+  "engines": {
+    "node": ">=0.4.5"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "licenses" : [
+    {
+      "type" : "MIT",
+      "url" : "http://github.com/mfncooper/mockery/raw/master/LICENSE"
+    }
+  ]
+}
