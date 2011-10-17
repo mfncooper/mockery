@@ -36,7 +36,23 @@ var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
     registeredAllowables = {},
-    originalLoader = null;
+    originalLoader = null,
+    warnNonAllowable = true
+;
+
+/*
+ * Disable warning messages when non-registered modules are loaded.
+ */
+function disableWarnNonAllowable() {
+    warnNonAllowable = false;
+}
+
+/*
+ * Enable warning messages when non-registered modules are loaded.
+ */
+function enableWarnNonAllowable() {
+    warnNonAllowable = true;
+}
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -65,7 +81,9 @@ function hookedLoader(request, parent, isMain) {
         return subst.module;
     } else {
         if (!registeredAllowables.hasOwnProperty(request)) {
-            console.warn("WARNING: loading non-allowed module: " + request);
+            if (warnNonAllowable) {
+                console.warn("WARNING: loading non-allowed module: " + request);
+            }
         } else {
             allow = registeredAllowables[request];
             if (allow.unhook) {
@@ -214,6 +232,8 @@ function deregisterAll() {
 exports.enable = enable;
 exports.disable = disable;
 exports.registerMock = registerMock;
+exports.enableWarnNonAllowable = enableWarnNonAllowable;
+exports.disableWarnNonAllowable = disableWarnNonAllowable;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
 exports.deregisterMock = deregisterMock;
