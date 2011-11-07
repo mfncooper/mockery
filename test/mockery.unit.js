@@ -117,17 +117,34 @@ module.exports = testCase({
             mockery.deregisterAllowable('./fake_module');
             test.equal(typeof mockery.getRegisteredAllowables()['./fake_module'], 'undefined');
             test.done();
+        }
+    }),
+
+    "deregisterAll": testCase({
+        setUp: function(callback) {
+            var substitute_path = './fake_module_sub';
+            var mock_foo = {'fake': 'foo'};
+            mockery.registerMock('./fake_module', mock_foo);
+            mockery.registerSubstitute('./fake_module', substitute_path);
+            mockery.registerAllowable('./fake_module');
+
+            mockery.deregisterAll('./fake_module');
+            callback();
         },
 
-        "when allowable's unhook property is true": testCase({
-            "removes from node module cache": function(test) {
-                mockery.registerAllowable('./fake_module', true);
-                mockery.deregisterAllowable('./fake_module');
-                var mod = require('module');
-                console.log(mod);
-                test.equal(typeof mockery.getRegisteredAllowables()['./fake_module'], 'undefined');
-                test.done();
-            }
-        })
+        "removes modules from registeredMocks": function(test) {
+            test.equal(typeof mockery.getRegisteredMocks()['./fake_module'], 'undefined');
+            test.done();
+        },
+
+        "removes modules from registeredSubstitutes": function(test) {
+            test.equal(typeof mockery.getRegisteredSubstitutes()['./fake_module'], 'undefined');
+            test.done();
+        },
+
+        "removes modules from registeredAllowables": function(test) {
+            test.equal(typeof mockery.getRegisteredAllowables()['./fake_module'], 'undefined');
+            test.done();
+        }
     })
 });
