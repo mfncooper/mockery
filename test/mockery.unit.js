@@ -1,3 +1,7 @@
+/*
+ * Run with nodeunit:
+ *   nodeunit mockery.unit.js
+ */
 var testCase = require('nodeunit').testCase;
 var mockery = require('../mockery');
 var sinon = require('sinon');
@@ -85,6 +89,33 @@ module.exports = testCase({
             mockery.registerSubstitute('./fake_module', substitute_path);
             mockery.deregisterSubstitute('./fake_module');
             test.equal(typeof mockery.getRegisteredSubstitutes()['./fake_module'], 'undefined');
+            test.done();
+        }
+    }),
+
+    "registerAllowable": testCase({
+        "without unhook param": testCase({
+            "adds module to registeredAllowables, sets unhook to false": function(test) {
+                mockery.registerAllowable('./fake_module');
+                test.deepEqual(mockery.getRegisteredAllowables()['./fake_module'], {unhook: false, paths: []});
+                test.done();
+            }
+        }),
+
+        "with unhook param": testCase({
+            "adds module to registeredAllowables, sets unhook to true": function(test) {
+                mockery.registerAllowable('./fake_module', true);
+                test.deepEqual(mockery.getRegisteredAllowables()['./fake_module'], {unhook: true, paths: []});
+                test.done();
+            }
+        })
+    }),
+
+    "deregisterAllowable": testCase({
+        "removes module from registeredAllowables": function(test) {
+            mockery.registerAllowable('./fake_module');
+            mockery.deregisterAllowable('./fake_module');
+            test.equal(typeof mockery.getRegisteredAllowables()['./fake_module'], 'undefined');
             test.done();
         }
     })

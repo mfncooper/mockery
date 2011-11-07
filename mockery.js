@@ -226,14 +226,22 @@ function getRegisteredSubstitutes() {
     return registeredSubstitutes;
 }
 
+/*
+ * Public getter method for registeredAllowables object.
+ */
+function getRegisteredAllowables() {
+    return registeredAllowables;
+}
+
 // Exported functions
 exports.enable = enable;
 exports.disable = disable;
 exports.registerMock = registerMock;
-exports.getRegisteredMocks = getRegisteredMocks;
 exports.registerSubstitute = registerSubstitute;
-exports.getRegisteredSubstitutes = getRegisteredSubstitutes;
 exports.registerAllowable = registerAllowable;
+exports.getRegisteredMocks = getRegisteredMocks;
+exports.getRegisteredSubstitutes = getRegisteredSubstitutes;
+exports.getRegisteredAllowables = getRegisteredAllowables;
 exports.deregisterMock = deregisterMock;
 exports.deregisterSubstitute = deregisterSubstitute;
 exports.deregisterAllowable = deregisterAllowable;
