@@ -117,6 +117,17 @@ module.exports = testCase({
             mockery.deregisterAllowable('./fake_module');
             test.equal(typeof mockery.getRegisteredAllowables()['./fake_module'], 'undefined');
             test.done();
-        }
+        },
+
+        "when allowable's unhook property is true": testCase({
+            "removes from node module cache": function(test) {
+                mockery.registerAllowable('./fake_module', true);
+                mockery.deregisterAllowable('./fake_module');
+                var mod = require('module');
+                console.log(mod);
+                test.equal(typeof mockery.getRegisteredAllowables()['./fake_module'], 'undefined');
+                test.done();
+            }
+        })
     })
 });
