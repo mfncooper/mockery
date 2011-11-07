@@ -15,7 +15,10 @@
     "node": ">=0.4.5"
   },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "nodeunit" : "0.6.2",
+    "sinon" : "1.2.0"
+  },
   "licenses" : [
     {
       "type" : "MIT",

@@ -36,7 +36,9 @@ var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
     registeredAllowables = {},
-    originalLoader = null;
+    originalLoader = null
+;
+
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -141,7 +143,7 @@ function deregisterMock(mod) {
  */
 function registerSubstitute(mod, subst) {
     if (registeredSubstitutes.hasOwnProperty(mod)) {
-        console.warn("WARNING: Replacing existing substiute for module: " + mod);
+        console.warn("WARNING: Replacing existing substitute for module: " + mod);
     }
     registeredSubstitutes[mod] = subst;
 }
@@ -210,12 +212,36 @@ function deregisterAll() {
     registeredAllowables = {};
 }
 
+/*
+ * Public getter method for registeredMocks object.
+ */
+function getRegisteredMocks() {
+    return registeredMocks;
+}
+
+/*
+ * Public getter method for registeredSubstitutes object.
+ */
+function getRegisteredSubstitutes() {
+    return registeredSubstitutes;
+}
+
+/*
+ * Public getter method for registeredAllowables object.
+ */
+function getRegisteredAllowables() {
+    return registeredAllowables;
+}
+
 // Exported functions
 exports.enable = enable;
 exports.disable = disable;
 exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
+exports.getRegisteredMocks = getRegisteredMocks;
+exports.getRegisteredSubstitutes = getRegisteredSubstitutes;
+exports.getRegisteredAllowables = getRegisteredAllowables;
 exports.deregisterMock = deregisterMock;
 exports.deregisterSubstitute = deregisterSubstitute;
 exports.deregisterAllowable = deregisterAllowable;
