@@ -36,23 +36,9 @@ var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
     registeredAllowables = {},
-    originalLoader = null,
-    warnNonAllowable = true
+    originalLoader = null
 ;
 
-/*
- * Disable warning messages when non-registered modules are loaded.
- */
-function disableWarnNonAllowable() {
-    warnNonAllowable = false;
-}
-
-/*
- * Enable warning messages when non-registered modules are loaded.
- */
-function enableWarnNonAllowable() {
-    warnNonAllowable = true;
-}
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -81,9 +67,7 @@ function hookedLoader(request, parent, isMain) {
         return subst.module;
     } else {
         if (!registeredAllowables.hasOwnProperty(request)) {
-            if (warnNonAllowable) {
-                console.warn("WARNING: loading non-allowed module: " + request);
-            }
+            console.warn("WARNING: loading non-allowed module: " + request);
         } else {
             allow = registeredAllowables[request];
             if (allow.unhook) {
@@ -159,7 +143,7 @@ function deregisterMock(mod) {
  */
 function registerSubstitute(mod, subst) {
     if (registeredSubstitutes.hasOwnProperty(mod)) {
-        console.warn("WARNING: Replacing existing substiute for module: " + mod);
+        console.warn("WARNING: Replacing existing substitute for module: " + mod);
     }
     registeredSubstitutes[mod] = subst;
 }
@@ -228,13 +212,27 @@ function deregisterAll() {
     registeredAllowables = {};
 }
 
+/*
+ * Public getter method for registeredMocks object.
+ */
+function getRegisteredMocks() {
+    return registeredMocks;
+}
+
+/*
+ * Public getter method for registeredSubstitutes object.
+ */
+function getRegisteredSubstitutes() {
+    return registeredSubstitutes;
+}
+
 // Exported functions
 exports.enable = enable;
 exports.disable = disable;
 exports.registerMock = registerMock;
-exports.enableWarnNonAllowable = enableWarnNonAllowable;
-exports.disableWarnNonAllowable = disableWarnNonAllowable;
+exports.getRegisteredMocks = getRegisteredMocks;
 exports.registerSubstitute = registerSubstitute;
+exports.getRegisteredSubstitutes = getRegisteredSubstitutes;
 exports.registerAllowable = registerAllowable;
 exports.deregisterMock = deregisterMock;
 exports.deregisterSubstitute = deregisterSubstitute;
