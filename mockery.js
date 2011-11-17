@@ -143,7 +143,9 @@ function registerSubstitute(mod, subst) {
     if (registeredSubstitutes.hasOwnProperty(mod)) {
         console.warn("WARNING: Replacing existing substiute for module: " + mod);
     }
-    registeredSubstitutes[mod] = subst;
+    registeredSubstitutes[mod] = {
+        name: subst
+    };
 }
 
 /*
