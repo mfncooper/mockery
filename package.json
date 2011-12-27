@@ -1,5 +1,11 @@
 {
   "author": "Martin Cooper <mfncooper@gmail.com>",
+  "contributors": [
+    {
+      "name": "Bryan Donovan",
+      "email": "bdondo@gmail.com"
+    }
+  ],
   "name": "mockery",
   "description": "Simplifying the use of mocks with Node.js",
   "version": "1.1.1",
@@ -15,7 +21,13 @@
     "node": ">=0.4.5"
   },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "nodeunit" : "0.6.x",
+    "sinon" : "1.2.x"
+  },
+  "scripts": {
+    "test": "test/run.js"
+  },
   "licenses" : [
     {
       "type" : "MIT",
