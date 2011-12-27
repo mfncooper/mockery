@@ -23,7 +23,7 @@ module.exports = testCase({
         callback();
     },
 
-    "when a mock is not registered": testCase({
+    "when nothing is registered": testCase({
         "and mockery is enabled": testCase({
             setUp: function (callback) {
                 mockery.enable();
@@ -40,7 +40,45 @@ module.exports = testCase({
                 mock_console.verify();
                 mock_console.restore();
                 test.done();
-            }
+            },
+
+            "and warnings are disabled": testCase({
+                setUp: function (callback) {
+                    mockery.warnOnUnregistered(false);
+                    callback();
+                },
+
+                "requiring a module causes no warning to be logged": function (test) {
+                    var mock_console = sinon.mock(console);
+                    mock_console.expects('warn').never();
+
+                    var fake_module = require('./fixtures/fake_module');
+                    test.equal(fake_module.foo(), 'real foo');
+
+                    mock_console.verify();
+                    mock_console.restore();
+                    test.done();
+                }
+            }),
+
+            "and warnings are reenabled": testCase({
+                setUp: function (callback) {
+                    mockery.warnOnUnregistered(true);
+                    callback();
+                },
+
+                "requiring a module causes a warning to be logged": function (test) {
+                    var mock_console = sinon.mock(console);
+                    mock_console.expects('warn').once();
+
+                    var fake_module = require('./fixtures/fake_module');
+                    test.equal(fake_module.foo(), 'real foo');
+
+                    mock_console.verify();
+                    mock_console.restore();
+                    test.done();
+                }
+            })
         })
     }),
 
