@@ -148,9 +148,9 @@ you may find it irritating to have to allow each module or to have all the
 warnings appear on the console. If you need to, you can tell Mockery to turn
 off those warnings:
 
-    mockery.warnOnUnregistered(true);
+    mockery.warnOnUnregistered(false);
 
-If you later need to re-enable the warnings, then passing `false` to the same
+If you later need to re-enable the warnings, then passing `true` to the same
 function will do that, as you might imagine.
 
 ## The name
