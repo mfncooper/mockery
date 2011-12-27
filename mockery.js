@@ -36,7 +36,8 @@ var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
     registeredAllowables = {},
-    originalLoader = null;
+    originalLoader = null,
+    warnIfUnregistered = true;
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -64,15 +65,17 @@ function hookedLoader(request, parent, isMain) {
         }
         return subst.module;
     } else {
-        if (!registeredAllowables.hasOwnProperty(request)) {
-            console.warn("WARNING: loading non-allowed module: " + request);
-        } else {
+        if (registeredAllowables.hasOwnProperty(request)) {
             allow = registeredAllowables[request];
             if (allow.unhook) {
                 file = m._resolveFilename(request, parent)[1];
                 if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
                     allow.paths.push(file);
                 }
+            }
+        } else {
+            if (warnIfUnregistered) {
+                console.warn("WARNING: loading non-allowed module: " + request);
             }
         }
         return originalLoader(request, parent, isMain);
@@ -110,6 +113,14 @@ function disable() {
 }
 
 /*
+ * Enable or disable warnings to the console when modules are loaded that have
+ * not been registered as a mock, a substitute, or allowed.
+ */
+function warnOnUnregistered(enable) {
+    warnIfUnregistered = enable;
+}
+
+/*
  * Register a mock object for the specified module. While mockery is enabled,
  * any subsequent 'require' for this module will return the mock object. The
  * mock need not mock out all original exports, but no fallback is provided
@@ -141,7 +152,7 @@ function deregisterMock(mod) {
  */
 function registerSubstitute(mod, subst) {
     if (registeredSubstitutes.hasOwnProperty(mod)) {
-        console.warn("WARNING: Replacing existing substiute for module: " + mod);
+        console.warn("WARNING: Replacing existing substitute for module: " + mod);
     }
     registeredSubstitutes[mod] = {
         name: subst
@@ -215,6 +226,7 @@ function deregisterAll() {
 // Exported functions
 exports.enable = enable;
 exports.disable = disable;
+exports.warnOnUnregistered = warnOnUnregistered;
 exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;

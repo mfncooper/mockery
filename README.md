@@ -136,6 +136,23 @@ function to deregister everything:
 This will deregister all mocks, substitutes, and allowable modules, as well as
 unhooking any hooked modules.
 
+## Disabling warnings
+
+As mentioned above, if you enable Mockery and _don't_ mock, substitute, or
+allow a module that is later loaded, Mockery will print a warning to the
+console to tell you that. This is important when you're writing unit tests,
+so that you don't end up using modules you weren't aware of.
+
+In certain circumstances, such as when writing functional or integration tests,
+you may find it irritating to have to allow each module or to have all the
+warnings appear on the console. If you need to, you can tell Mockery to turn
+off those warnings:
+
+    mockery.warnOnUnregistered(true);
+
+If you later need to re-enable the warnings, then passing `false` to the same
+function will do that, as you might imagine.
+
 ## The name
 
 Mockery is to mocks as rookery is to rooks.
