@@ -4,11 +4,15 @@
     {
       "name": "Bryan Donovan",
       "email": "bdondo@gmail.com"
+    },
+    {
+      "name": "Aneil Mallavarapu",
+      "email": "aneil.mallavar@gmail.com"
     }
   ],
   "name": "mockery",
   "description": "Simplifying the use of mocks with Node.js",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/mfncooper/mockery.git"
