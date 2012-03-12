@@ -108,6 +108,14 @@ again, you can deregister it if you need to:
 
     mockery.deregisterAllowable('./my-source-under-test');
 
+If you wish to later unload an allowed module from node's module
+system, you should call registerAllowable with true as the second
+argument.  This sets the 'unhook' parameter to true, and marks the
+module to be unloaded from node's module cache by deregisterAllowable
+or deregisterAll: 
+
+    mockery.registerAllowable('./my-source-under-test',true);
+    
 ### Unhooking
 
 By default, the Node module loader will load a given module only once, caching
@@ -138,6 +146,25 @@ function to deregister everything:
 This will deregister all mocks, substitutes, and allowable modules, as well as
 unhooking any hooked modules.
 
+## Registering modules allowable by default
+
+Sometimes, you may have so many modules that should be allowed (for
+example in integration tests), that it's more convenient to register a
+few substitutes and mocks, then set all other modules as allowed.
+For example:
+
+    mockery.registerAllAllowableStart(true);
+    
+Where the argument is the same unhook parameter given as the second
+argument to registerAllowable.  It is a boolean value indicating
+whether the modules should be removed from node's module cache when
+deregistration occurs.  
+
+When tests are complete, you should call:
+
+    mockery.registerAllAllowableEnd();
+    mockery.deregisterAll();
+    
 ## Disabling warnings
 
 As mentioned above, if you enable Mockery and _don't_ mock, substitute, or
