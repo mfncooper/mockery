@@ -67,7 +67,6 @@ function hookedLoader(request, parent, isMain) {
         return subst.module;
     } else {
         if (!registeredAllowables.hasOwnProperty(request) && registerAll) {
-            console.log("Automatically registering allowable: "+JSON.stringify(request));
             registerAllowable(request,registerAll.unhook);
         }
         if (registeredAllowables.hasOwnProperty(request)) {
