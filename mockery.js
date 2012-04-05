@@ -37,7 +37,8 @@ var m = require('module'),
     registeredSubstitutes = {},
     registeredAllowables = {},
     originalLoader = null,
-    warnIfUnregistered = true;
+    warnIfUnregistered = true,
+    registerAll=null;
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -65,10 +66,13 @@ function hookedLoader(request, parent, isMain) {
         }
         return subst.module;
     } else {
+        if (!registeredAllowables.hasOwnProperty(request) && registerAll) {
+            registerAllowable(request,registerAll.unhook);
+        }
         if (registeredAllowables.hasOwnProperty(request)) {
             allow = registeredAllowables[request];
             if (allow.unhook) {
-                file = m._resolveFilename(request, parent)[1];
+                file = m._resolveFilename(request, parent);
                 if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
                     allow.paths.push(file);
                 }
@@ -80,6 +84,22 @@ function hookedLoader(request, parent, isMain) {
         }
         return originalLoader(request, parent, isMain);
     }
+}
+
+/*
+ * Set default behavior that any file is registered, with the unhook state provided
+ *
+ */
+function registerAllAllowableStart(unhook) {
+    registerAll = {unhook:unhook};
+}
+
+/*
+ * Call to end registerAllStart.
+ * It does not matter whether one calls deregisterAll() before or after registerAllEnd()
+ */
+function registerAllAllowableEnd() {
+    registerAll = null;
 }
 
 /*
@@ -234,3 +254,5 @@ exports.deregisterMock = deregisterMock;
 exports.deregisterSubstitute = deregisterSubstitute;
 exports.deregisterAllowable = deregisterAllowable;
 exports.deregisterAll = deregisterAll;
+exports.registerAllAllowableStart = registerAllAllowableStart;
+exports.registerAllAllowableEnd = registerAllAllowableEnd;
