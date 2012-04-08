@@ -40,6 +40,21 @@ var m = require('module'),
     warnIfUnregistered = true;
 
 /*
+ * The perils of using internal functions. The Node-internal _resolveFilename
+ * function was changed in commit 840229a8251955d2b791928875f36d35127dcad0
+ * (just prior to v0.6.10) such that it returns a string, whereas previously
+ * it returned an array. Instead of playing version number tricks, just check
+ * for an array and pull the filename from that if necessary.
+ */
+function resolveFilename(request, parent) {
+    var filename = m._resolveFilename(request, parent);
+    if (Array.isArray(filename)) {
+        filename = filename[1];
+    }
+    return filename;
+}
+
+/*
  * The (private) loader replacement that is used when hooking is enabled. It
  * does the work of returning a mock or substitute when configured, reporting
  * non-allowed modules, and invoking the original loader when appropriate.
@@ -68,7 +83,7 @@ function hookedLoader(request, parent, isMain) {
         if (registeredAllowables.hasOwnProperty(request)) {
             allow = registeredAllowables[request];
             if (allow.unhook) {
-                file = m._resolveFilename(request, parent)[1];
+                file = resolveFilename(request, parent);
                 if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
                     allow.paths.push(file);
                 }
