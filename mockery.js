@@ -84,6 +84,7 @@ function hookedLoader(request, parent, isMain) {
             allow = registeredAllowables[request];
             if (allow.unhook) {
                 file = resolveFilename(request, parent);
+                delete m._cache[file];
                 if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
                     allow.paths.push(file);
                 }
