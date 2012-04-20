@@ -20,7 +20,9 @@
   "engines": {
     "node": ">=0.4.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "require-like": "0.1.x"
+  },
   "devDependencies": {
     "nodeunit" : "0.6.x",
     "sinon" : "1.2.x"
