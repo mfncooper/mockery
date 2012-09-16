@@ -4,7 +4,7 @@
 
  MIT License
 
- Copyright (c) 2011 Yahoo! Inc. All Rights Reserved.
+ Copyright (c) 2011-2012 Yahoo! Inc. All Rights Reserved.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to
@@ -47,6 +47,7 @@ var m = require('module'),
  * for an array and pull the filename from that if necessary.
  */
 function resolveFilename(request, parent) {
+    /*jslint nomen: true */
     var filename = m._resolveFilename(request, parent);
     if (Array.isArray(filename)) {
         filename = filename[1];
@@ -70,7 +71,9 @@ function hookedLoader(request, parent, isMain) {
 
     if (registeredMocks.hasOwnProperty(request)) {
         return registeredMocks[request];
-    } else if (registeredSubstitutes.hasOwnProperty(request)) {
+    }
+
+    if (registeredSubstitutes.hasOwnProperty(request)) {
         subst = registeredSubstitutes[request];
         if (!subst.module && subst.name) {
             subst.module = originalLoader(subst.name, parent, isMain);
@@ -79,22 +82,23 @@ function hookedLoader(request, parent, isMain) {
             throw new Error("Misconfigured substitute for '" + request + "'");
         }
         return subst.module;
-    } else {
-        if (registeredAllowables.hasOwnProperty(request)) {
-            allow = registeredAllowables[request];
-            if (allow.unhook) {
-                file = resolveFilename(request, parent);
-                if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
-                    allow.paths.push(file);
-                }
-            }
-        } else {
-            if (warnIfUnregistered) {
-                console.warn("WARNING: loading non-allowed module: " + request);
+    }
+
+    if (registeredAllowables.hasOwnProperty(request)) {
+        allow = registeredAllowables[request];
+        if (allow.unhook) {
+            file = resolveFilename(request, parent);
+            if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
+                allow.paths.push(file);
             }
         }
-        return originalLoader(request, parent, isMain);
+    } else {
+        if (warnIfUnregistered) {
+            console.warn("WARNING: loading non-allowed module: " + request);
+        }
     }
+
+    return originalLoader(request, parent, isMain);
 }
 
 /*
@@ -222,6 +226,7 @@ function deregisterAllowable(mod) {
         var allow = registeredAllowables[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
+                /*jslint nomen: true */
                 delete m._cache[p];
             });
         }
@@ -250,6 +255,7 @@ function deregisterAll() {
         var allow = registeredAllowables[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
+                /*jslint nomen: true */
                 delete m._cache[p];
             });
         }
