@@ -108,6 +108,15 @@ again, you can deregister it if you need to:
 
     mockery.deregisterAllowable('./my-source-under-test');
 
+Sometimes you'll find that you need to register several modules at once. A
+convenience function lets you do this with a single call:
+
+    mockery.registerAllowables(['async', 'path', 'util']);
+
+and similarly to deregister several modules at once, as you would expect:
+
+    mockery.deregisterAllowables(['async', 'path', 'util']);
+
 ### Unhooking
 
 By default, the Node module loader will load a given module only once, caching

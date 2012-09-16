@@ -202,6 +202,17 @@ function registerAllowable(mod, unhook) {
 }
 
 /*
+ * Register an array of modules as 'allowed'. This is a convenience function
+ * that performs the same function as 'registerAllowable' but for an array of
+ * modules rather than a single module.
+ */
+function registerAllowables(mods, unhook) {
+    mods.forEach(function (mod) {
+        registerAllowable(mod, unhook);
+    });
+}
+
+/*
  * Deregister a module as 'allowed'. A subsequent 'require' for that module
  * will generate a warning that the module is not allowed, unless or until a
  * mock or substitute is registered for that module.
@@ -216,6 +227,17 @@ function deregisterAllowable(mod) {
         }
         delete registeredAllowables[mod];
     }
+}
+
+/*
+ * Deregister an array of modules as 'allowed'. This is a convenience function
+ * that performs the same function as 'deregisterAllowable' but for an array of
+ * modules rather than a single module.
+ */
+function deregisterAllowables(mods) {
+    mods.forEach(function (mod) {
+        deregisterAllowable(mod);
+    });
 }
 
 /*
@@ -245,7 +267,9 @@ exports.warnOnUnregistered = warnOnUnregistered;
 exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
+exports.registerAllowables = registerAllowables;
 exports.deregisterMock = deregisterMock;
 exports.deregisterSubstitute = deregisterSubstitute;
 exports.deregisterAllowable = deregisterAllowable;
+exports.deregisterAllowables = deregisterAllowables;
 exports.deregisterAll = deregisterAll;

@@ -137,6 +137,59 @@ module.exports = testCase({
         })
     }),
 
+    "when an array of allowables is registered": testCase({
+        setUp: function (callback) {
+            mockery.registerAllowables(
+                ['./fixtures/fake_module', './fixtures/fake_module_2']);
+            callback();
+        },
+
+        "and mockery is enabled": testCase({
+            setUp: function (callback) {
+                mockery.enable();
+                callback();
+            },
+
+            "requiring the modules causes no warning to be logged": function (test) {
+                var mock_console = sinon.mock(console);
+                mock_console.expects('warn').never();
+
+                var fake_module = require('./fixtures/fake_module');
+                test.equal(fake_module.foo(), 'real foo');
+
+                var fake_module_2 = require('./fixtures/fake_module_2');
+                test.equal(fake_module_2.bar(), 'real bar');
+
+                mock_console.verify();
+                mock_console.restore();
+                test.done();
+            },
+
+            "and the allowables are deregistered": testCase({
+                setUp: function (callback) {
+                    mockery.deregisterAllowables(
+                        ['./fixtures/fake_module', './fixtures/fake_module_2']);
+                    callback();
+                },
+
+                "requiring the modules causes warnings to be logged": function (test) {
+                    var mock_console = sinon.mock(console);
+                    mock_console.expects('warn').twice();
+
+                    var fake_module = require('./fixtures/fake_module');
+                    test.equal(fake_module.foo(), 'real foo');
+
+                    var fake_module_2 = require('./fixtures/fake_module_2');
+                    test.equal(fake_module_2.bar(), 'real bar');
+
+                    mock_console.verify();
+                    mock_console.restore();
+                    test.done();
+                }
+            })
+        })
+    }),
+
     "when an allowable is registered for unhooking": testCase({
         setUp: function (callback) {
             mockery.registerAllowable('./fixtures/fake_module', true);
