@@ -37,7 +37,9 @@ var m = require('module'),
     registeredSubstitutes = {},
     registeredAllowables = {},
     originalLoader = null,
-    warnIfUnregistered = true;
+    warnIfUnregistered = true,
+    warnWhenReplace = true;
+    
 
 /*
  * The perils of using internal functions. The Node-internal _resolveFilename
@@ -140,13 +142,22 @@ function warnOnUnregistered(enable) {
 }
 
 /*
+ * Enable or disable warnings to the console when mocks and/or subsitutes
+ * are replaced.
+ * 
+ */
+function warnOnReplace(enable) {
+	warnWhenReplace = enable;
+}
+
+/*
  * Register a mock object for the specified module. While mockery is enabled,
  * any subsequent 'require' for this module will return the mock object. The
  * mock need not mock out all original exports, but no fallback is provided
  * for anything not mocked and subsequently invoked.
  */
 function registerMock(mod, mock) {
-    if (registeredMocks.hasOwnProperty(mod)) {
+    if (registeredMocks.hasOwnProperty(mod) && warnWhenReplace) {
         console.warn("WARNING: Replacing existing mock for module: " + mod);
     }
     registeredMocks[mod] = mock;
@@ -170,7 +181,7 @@ function deregisterMock(mod) {
  * a mock implementation is itself implemented as a module.
  */
 function registerSubstitute(mod, subst) {
-    if (registeredSubstitutes.hasOwnProperty(mod)) {
+    if (registeredSubstitutes.hasOwnProperty(mod) && warnWhenReplace) {
         console.warn("WARNING: Replacing existing substitute for module: " + mod);
     }
     registeredSubstitutes[mod] = {
@@ -270,6 +281,7 @@ function deregisterAll() {
 exports.enable = enable;
 exports.disable = disable;
 exports.warnOnUnregistered = warnOnUnregistered;
+exports.warnOnReplace = warnOnReplace;
 exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
