@@ -161,8 +161,14 @@ off those warnings:
 
     mockery.warnOnUnregistered(false);
 
+If you find yourself with several warnings regarding replacement of mock
+and/or substitutes, you can switch off the warnings by invoking below in your
+code:
+
+    mockery.warnOnReplace(false);
+
 If you later need to re-enable the warnings, then passing `true` to the same
-function will do that, as you might imagine.
+functions will do that, as you might imagine.
 
 ## The name
 
