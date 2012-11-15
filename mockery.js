@@ -38,7 +38,7 @@ var m = require('module'),
     registeredAllowables = {},
     originalLoader = null,
     warnIfUnregistered = true,
-    warnOnReplace = true;
+    warnWhenReplace = true;
     
 
 /*
@@ -147,7 +147,7 @@ function warnOnUnregistered(enable) {
  * 
  */
 function warnOnReplace(enable) {
-	warnOnReplace = enable;
+	warnWhenReplace = enable;
 }
 
 /*
@@ -157,7 +157,7 @@ function warnOnReplace(enable) {
  * for anything not mocked and subsequently invoked.
  */
 function registerMock(mod, mock) {
-    if (registeredMocks.hasOwnProperty(mod) && warnOnReplace) {
+    if (registeredMocks.hasOwnProperty(mod) && warnWhenReplace) {
         console.warn("WARNING: Replacing existing mock for module: " + mod);
     }
     registeredMocks[mod] = mock;
@@ -181,7 +181,7 @@ function deregisterMock(mod) {
  * a mock implementation is itself implemented as a module.
  */
 function registerSubstitute(mod, subst) {
-    if (registeredSubstitutes.hasOwnProperty(mod) && warnOnReplace) {
+    if (registeredSubstitutes.hasOwnProperty(mod) && warnWhenReplace) {
         console.warn("WARNING: Replacing existing substitute for module: " + mod);
     }
     registeredSubstitutes[mod] = {
@@ -281,6 +281,7 @@ function deregisterAll() {
 exports.enable = enable;
 exports.disable = disable;
 exports.warnOnUnregistered = warnOnUnregistered;
+exports.warnOnReplace = warnOnReplace;
 exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
