@@ -41,7 +41,28 @@ var m = require('module'),
     registeredSubstitutes = {},
     registeredAllowables = {},
     originalLoader = null,
-    warnIfUnregistered = true;
+    defaultOptions = {
+        warnOnUnregistered: true
+    },
+    options = {};
+
+/*
+ * Merge the supplied options in with a new copy of the default options to get
+ * the effective options, and return those.
+ */
+function getEffectiveOptions(opts) {
+    var options = {};
+
+    Object.keys(defaultOptions).forEach(function (key) {
+        options[key] = defaultOptions[key];
+    });
+    if (opts) {
+        Object.keys(opts).forEach(function (key) {
+            options[key] = opts[key];
+        });
+    }
+    return options;
+}
 
 /*
  * The perils of using internal functions. The Node-internal _resolveFilename
@@ -96,7 +117,7 @@ function hookedLoader(request, parent, isMain) {
             }
         }
     } else {
-        if (warnIfUnregistered) {
+        if (options.warnOnUnregistered) {
             console.warn("WARNING: loading non-allowed module: " + request);
         }
     }
@@ -109,11 +130,12 @@ function hookedLoader(request, parent, isMain) {
  * 'require' invocations will be hooked until 'disable' is called. Calling this
  * function more than once will have no ill effects.
  */
-function enable() {
+function enable(opts) {
     if (originalLoader) {
         // Already hooked
         return;
     }
+    options = getEffectiveOptions(opts);
     originalLoader = m._load;
     m._load = hookedLoader;
 }
@@ -137,7 +159,7 @@ function disable() {
  * not been registered as a mock, a substitute, or allowed.
  */
 function warnOnUnregistered(enable) {
-    warnIfUnregistered = enable;
+    options.warnOnUnregistered = enable;
 }
 
 /*
