@@ -334,6 +334,58 @@ module.exports = testCase({
                     test.equal(fake_module.foo(), 'real foo');
                     test.done();
                 }
+            }),
+
+            "registering a replacement causes a warning to be logged": function (test) {
+                var mock_console;
+
+                mock_console = sinon.mock(console);
+                mock_console.expects('warn').once();
+
+                mockery.registerMock('./fixtures/fake_module', mock_fake_module);
+
+                mock_console.verify();
+                mock_console.restore();
+                test.done();
+            },
+            "and warnings are disabled": testCase({
+                setUp: function (callback) {
+                    mockery.warnOnReplace(false);
+                    callback();
+                },
+
+                "registering a replacement causes no warning to be logged": function (test) {
+                    var mock_console;
+
+                    mock_console = sinon.mock(console);
+                    mock_console.expects('warn').never();
+
+                    mockery.registerMock('./fixtures/fake_module', mock_fake_module);
+
+                    mock_console.verify();
+                    mock_console.restore();
+                    test.done();
+                },
+
+                "and warnings are reenabled": testCase({
+                    setUp: function (callback) {
+                        mockery.warnOnReplace(true);
+                        callback();
+                    },
+
+                    "registering a replacement causes a warning to be logged": function (test) {
+                        var mock_console;
+
+                        mock_console = sinon.mock(console);
+                        mock_console.expects('warn').once();
+
+                        mockery.registerMock('./fixtures/fake_module', mock_fake_module);
+
+                        mock_console.verify();
+                        mock_console.restore();
+                        test.done();
+                    }
+                })
             })
         })
     }),
@@ -355,7 +407,62 @@ module.exports = testCase({
                 var fake_module = require('./fixtures/fake_module');
                 test.equal(fake_module.foo(), 'substitute foo');
                 test.done();
-            }
+            },
+
+            "registering a replacement causes a warning to be logged": function (test) {
+                var mock_console;
+
+                mock_console = sinon.mock(console);
+                mock_console.expects('warn').once();
+
+                mockery.registerSubstitute('./fixtures/fake_module',
+                    './fixtures/substitute_fake_module');
+
+                mock_console.verify();
+                mock_console.restore();
+                test.done();
+            },
+            "and warnings are disabled": testCase({
+                setUp: function (callback) {
+                    mockery.warnOnReplace(false);
+                    callback();
+                },
+
+                "registering a replacement causes no warning to be logged": function (test) {
+                    var mock_console;
+
+                    mock_console = sinon.mock(console);
+                    mock_console.expects('warn').never();
+
+                    mockery.registerSubstitute('./fixtures/fake_module',
+                        './fixtures/substitute_fake_module');
+
+                    mock_console.verify();
+                    mock_console.restore();
+                    test.done();
+                },
+
+                "and warnings are reenabled": testCase({
+                    setUp: function (callback) {
+                        mockery.warnOnReplace(true);
+                        callback();
+                    },
+
+                    "registering a replacement causes a warning to be logged": function (test) {
+                        var mock_console;
+
+                        mock_console = sinon.mock(console);
+                        mock_console.expects('warn').once();
+
+                        mockery.registerSubstitute('./fixtures/fake_module',
+                            './fixtures/substitute_fake_module');
+
+                        mock_console.verify();
+                        mock_console.restore();
+                        test.done();
+                    }
+                })
+            })
         })
     })
 
