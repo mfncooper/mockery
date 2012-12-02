@@ -1,11 +1,43 @@
 /*
+ Copyrights for code authored by Yahoo! Inc. is licensed under the following
+ terms:
+
+ MIT License
+
+ Copyright (c) 2011-2012 Yahoo! Inc. All Rights Reserved.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+*/
+
+/*
  * Run with nodeunit:
  *   nodeunit --reporter nested mockery.functional.js
  */
-var testCase = require('nodeunit').testCase;
-var mockery = require('../mockery');
-var sinon = require('sinon');
-var m = require('module');
+
+/*jslint nomen: true */
+
+"use strict";
+
+var testCase = require('nodeunit').testCase,
+    mockery = require('../mockery'),
+    sinon = require('sinon'),
+    m = require('module');
 
 var mock_fake_module = {
     foo: function () {
@@ -14,9 +46,13 @@ var mock_fake_module = {
 };
 
 function isCached(name) {
+    var id;
+
     // Super-simplistic, but good enough for the tests
-    for (var id in m._cache) {
-        if (id.indexOf(name) !== -1) return true;
+    for (id in m._cache) {
+        if (m._cache.hasOwnProperty(id) && id.indexOf(name) !== -1) {
+            return true;
+        }
     }
 
     return false;
@@ -41,10 +77,12 @@ module.exports = testCase({
             },
 
             "requiring a module causes a warning to be logged": function (test) {
-                var mock_console = sinon.mock(console);
+                var mock_console, fake_module;
+
+                mock_console = sinon.mock(console);
                 mock_console.expects('warn').once();
 
-                var fake_module = require('./fixtures/fake_module');
+                fake_module = require('./fixtures/fake_module');
                 test.equal(fake_module.foo(), 'real foo');
 
                 mock_console.verify();
@@ -59,10 +97,12 @@ module.exports = testCase({
                 },
 
                 "requiring a module causes no warning to be logged": function (test) {
-                    var mock_console = sinon.mock(console);
+                    var mock_console, fake_module;
+
+                    mock_console = sinon.mock(console);
                     mock_console.expects('warn').never();
 
-                    var fake_module = require('./fixtures/fake_module');
+                    fake_module = require('./fixtures/fake_module');
                     test.equal(fake_module.foo(), 'real foo');
 
                     mock_console.verify();
@@ -78,10 +118,12 @@ module.exports = testCase({
                 },
 
                 "requiring a module causes a warning to be logged": function (test) {
-                    var mock_console = sinon.mock(console);
+                    var mock_console, fake_module;
+
+                    mock_console = sinon.mock(console);
                     mock_console.expects('warn').once();
 
-                    var fake_module = require('./fixtures/fake_module');
+                    fake_module = require('./fixtures/fake_module');
                     test.equal(fake_module.foo(), 'real foo');
 
                     mock_console.verify();
@@ -105,10 +147,12 @@ module.exports = testCase({
             },
 
             "requiring the module causes no warning to be logged": function (test) {
-                var mock_console = sinon.mock(console);
+                var mock_console, fake_module;
+
+                mock_console = sinon.mock(console);
                 mock_console.expects('warn').never();
 
-                var fake_module = require('./fixtures/fake_module');
+                fake_module = require('./fixtures/fake_module');
                 test.equal(fake_module.foo(), 'real foo');
 
                 mock_console.verify();
@@ -123,10 +167,12 @@ module.exports = testCase({
                 },
 
                 "requiring the module causes a warning to be logged": function (test) {
-                    var mock_console = sinon.mock(console);
+                    var mock_console, fake_module;
+
+                    mock_console = sinon.mock(console);
                     mock_console.expects('warn').once();
 
-                    var fake_module = require('./fixtures/fake_module');
+                    fake_module = require('./fixtures/fake_module');
                     test.equal(fake_module.foo(), 'real foo');
 
                     mock_console.verify();
@@ -140,7 +186,8 @@ module.exports = testCase({
     "when an array of allowables is registered": testCase({
         setUp: function (callback) {
             mockery.registerAllowables(
-                ['./fixtures/fake_module', './fixtures/fake_module_2']);
+                ['./fixtures/fake_module', './fixtures/fake_module_2']
+            );
             callback();
         },
 
@@ -151,13 +198,15 @@ module.exports = testCase({
             },
 
             "requiring the modules causes no warning to be logged": function (test) {
-                var mock_console = sinon.mock(console);
+                var mock_console, fake_module, fake_module_2;
+
+                mock_console = sinon.mock(console);
                 mock_console.expects('warn').never();
 
-                var fake_module = require('./fixtures/fake_module');
+                fake_module = require('./fixtures/fake_module');
                 test.equal(fake_module.foo(), 'real foo');
 
-                var fake_module_2 = require('./fixtures/fake_module_2');
+                fake_module_2 = require('./fixtures/fake_module_2');
                 test.equal(fake_module_2.bar(), 'real bar');
 
                 mock_console.verify();
@@ -168,18 +217,21 @@ module.exports = testCase({
             "and the allowables are deregistered": testCase({
                 setUp: function (callback) {
                     mockery.deregisterAllowables(
-                        ['./fixtures/fake_module', './fixtures/fake_module_2']);
+                        ['./fixtures/fake_module', './fixtures/fake_module_2']
+                    );
                     callback();
                 },
 
                 "requiring the modules causes warnings to be logged": function (test) {
-                    var mock_console = sinon.mock(console);
+                    var mock_console, fake_module, fake_module_2;
+
+                    mock_console = sinon.mock(console);
                     mock_console.expects('warn').twice();
 
-                    var fake_module = require('./fixtures/fake_module');
+                    fake_module = require('./fixtures/fake_module');
                     test.equal(fake_module.foo(), 'real foo');
 
-                    var fake_module_2 = require('./fixtures/fake_module_2');
+                    fake_module_2 = require('./fixtures/fake_module_2');
                     test.equal(fake_module_2.bar(), 'real bar');
 
                     mock_console.verify();
@@ -223,7 +275,7 @@ module.exports = testCase({
 
             "and the module is required": testCase({
                 setUp: function (callback) {
-                    var fake_module = require('./fixtures/fake_module');
+                    require('./fixtures/fake_module');
                     callback();
                 },
 
