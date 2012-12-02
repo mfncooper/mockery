@@ -32,6 +32,10 @@
  * 'require' can be mocked out.
  */
 
+/*jslint nomen: true */
+
+"use strict";
+
 var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
@@ -47,7 +51,6 @@ var m = require('module'),
  * for an array and pull the filename from that if necessary.
  */
 function resolveFilename(request, parent) {
-    /*jslint nomen: true */
     var filename = m._resolveFilename(request, parent);
     if (Array.isArray(filename)) {
         filename = filename[1];
@@ -111,7 +114,6 @@ function enable() {
         // Already hooked
         return;
     }
-    /*jslint nomen: true */
     originalLoader = m._load;
     m._load = hookedLoader;
 }
@@ -126,7 +128,6 @@ function disable() {
         // Not hooked
         return;
     }
-    /*jslint nomen: true */
     m._load = originalLoader;
     originalLoader = null;
 }
@@ -226,7 +227,6 @@ function deregisterAllowable(mod) {
         var allow = registeredAllowables[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
-                /*jslint nomen: true */
                 delete m._cache[p];
             });
         }
@@ -255,7 +255,6 @@ function deregisterAll() {
         var allow = registeredAllowables[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
-                /*jslint nomen: true */
                 delete m._cache[p];
             });
         }
