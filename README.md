@@ -40,6 +40,28 @@ like this:
         mockery.disable();
     }
 
+### Options
+
+You can set up some initial configuration by passing an options object to
+`enable`. Omitting the options object, or any of the defined keys, causes the
+standard defaults to be used.
+
+For example, to disable all warnings, you might use this:
+
+    mockery.enable({
+        warnOnReplace: false,
+        warnOnUnregistered: false
+    });
+
+The available options are:
+
+* _warnOnReplace_ determines whether or not warnings are issued when a mock or
+substitute is replaced without being first deregistered. This has the same
+effect as the `warnOnReplace` function. [Default: true]
+* _warnOnUnregistered_ determines whether or not warnings are issued when a
+module is not mocked, substituted or allowed. This has the same effect as the
+`warnOnUnregistered` function. [Default: true]
+
 ## Registering mocks
 
 You register your mocks with Mockery to tell it which mocks to provide for which
@@ -161,8 +183,16 @@ off those warnings:
 
     mockery.warnOnUnregistered(false);
 
-If you later need to re-enable the warnings, then passing `true` to the same
-function will do that, as you might imagine.
+Mockery will also print a warning to the console whenever you register a mock
+or substitute for a module for which one is already registered. This is almost
+always what you want, since you should be deregistering mocks and substitutes
+that you no longer need. Occasionally, though, you may want to suppress these
+warnings, which you can do like this:
+
+    mockery.warnOnReplace(false);
+
+In either of these cases, if you later need to re-enable the warnings, then
+passing `true` to the same functions will do that, as you might imagine.
 
 ## The name
 
