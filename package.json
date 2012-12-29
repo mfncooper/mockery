@@ -1,4 +1,11 @@
 {
+  "name": "mockery",
+  "version": "1.3.0",
+  "description": "Simplifying the use of mocks with Node.js",
+  "keywords": [
+    "mock", "stub", "require", "module", "cache",
+    "unit", "test", "unittest", "testing", "tdd"
+  ],
   "author": "Martin Cooper <mfncooper@gmail.com>",
   "contributors": [
     {
@@ -6,9 +13,6 @@
       "email": "bdondo@gmail.com"
     }
   ],
-  "name": "mockery",
-  "description": "Simplifying the use of mocks with Node.js",
-  "version": "1.3.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/mfncooper/mockery.git"
