@@ -41,7 +41,9 @@ var m = require('module'),
     registeredSubstitutes = {},
     registeredAllowables = {},
     originalLoader = null,
+    originalCache = null,
     defaultOptions = {
+        useCleanCache: false,
         warnOnReplace: true,
         warnOnUnregistered: true
     },
@@ -136,7 +138,14 @@ function enable(opts) {
         // Already hooked
         return;
     }
+
     options = getEffectiveOptions(opts);
+
+    if (options.useCleanCache) {
+        originalCache = m._cache;
+        m._cache = {};
+    }
+
     originalLoader = m._load;
     m._load = hookedLoader;
 }
@@ -151,8 +160,25 @@ function disable() {
         // Not hooked
         return;
     }
+
+    if (options.useCleanCache) {
+        m._cache = originalCache;
+        originalCache = null;
+    }
+
     m._load = originalLoader;
     originalLoader = null;
+}
+
+ /*
+ * If the clean cache option is in effect, reset the module cache to an empty
+ * state. Calling this function when the clean cache option is not in effect
+ * will have no ill effects, but will do nothing.
+ */
+function resetCache() {
+    if (options.useCleanCache && originalCache) {
+        m._cache = {};
+    }
 }
 
 /*
@@ -299,6 +325,7 @@ function deregisterAll() {
 // Exported functions
 exports.enable = enable;
 exports.disable = disable;
+exports.resetCache = resetCache;
 exports.warnOnReplace = warnOnReplace;
 exports.warnOnUnregistered = warnOnUnregistered;
 exports.registerMock = registerMock;
