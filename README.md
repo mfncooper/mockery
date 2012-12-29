@@ -55,6 +55,9 @@ For example, to disable all warnings, you might use this:
 
 The available options are:
 
+* _useCleanCache_ determines whether a temporary module cache should be used
+while Mockery is enabled. See [Controlling the module cache](#controlling-the-module-cache)
+below. [Default: false]
 * _warnOnReplace_ determines whether or not warnings are issued when a mock or
 substitute is replaced without being first deregistered. This has the same
 effect as the `warnOnReplace` function. [Default: true]
@@ -168,6 +171,36 @@ function to deregister everything:
 
 This will deregister all mocks, substitutes, and allowable modules, as well as
 unhooking any hooked modules.
+
+## Controlling the module cache
+
+One of the common problems that people encounter when trying to use mocks in
+Node is that modules and their exports are almost always cached. This makes it
+difficult to plug in a mock for testing if the module being mocked has already
+been loaded elsewhere.
+
+Mockery provides a way for you to run your tests using a clean module cache, as
+if no modules have been loaded. When this option is enabled, any previously
+loaded modules will be "forgotten", and `require` calls will cause them to be
+reloaded. This in turn allows your mocks to be picked up, and your tests to run
+as expected.
+
+You tell Mockery to use a clean cache when you enable it, like this:
+
+    mockery.enable({ useCleanCache: true });
+
+Now all modules will be cached in this new clean cache, until you later disable
+Mockery again. The new cache is temporary, and is discarded when Mockery is
+disabled. The original cache is reinstated at that point, so you are back to
+where you were before enabling the clean cache option.
+
+While you are working with a temporary cache, it may occasionally be useful to
+reset it to a clean state again, without disabling and re-enabling Mockery. You
+can do this with:
+
+    mockery.resetCache();
+
+This function has no effect if the clean cache option is not already in use.
 
 ## Disabling warnings
 
