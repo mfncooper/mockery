@@ -464,6 +464,51 @@ module.exports = testCase({
                 })
             })
         })
+    }),
+
+    "when an intermediary module is involved": testCase({
+        "and mockery is not enabled": testCase({
+            "requiring the intermediary causes the original to be used": function (test) {
+                var intermediary = require('./fixtures/intermediary');
+                test.equal(intermediary.bar(), 'real foo');
+                test.done();
+            }
+        }),
+        "and mockery is enabled without the clean cache option": testCase({
+            setUp: function (callback) {
+                mockery.registerMock('./fake_module', mock_fake_module);
+                mockery.registerAllowable('./fixtures/intermediary');
+                mockery.enable({ useCleanCache: false });
+                callback();
+            },
+
+            "requiring the intermediary causes the original to be used": function (test) {
+                var intermediary = require('./fixtures/intermediary');
+                test.equal(intermediary.bar(), 'real foo');
+                test.done();
+            }
+        }),
+        "and mockery is enabled with the clean cache option": testCase({
+            setUp: function (callback) {
+                mockery.registerMock('./fake_module', mock_fake_module);
+                mockery.registerAllowable('./fixtures/intermediary');
+                mockery.enable({ useCleanCache: true });
+                callback();
+            },
+
+            "requiring the intermediary causes the mock to be used": function (test) {
+                var intermediary = require('./fixtures/intermediary');
+                test.equal(intermediary.bar(), 'mocked foo');
+                test.done();
+            }
+        }),
+        "and mockery is disabled": testCase({
+            "requiring the intermediary causes the original to be used": function (test) {
+                var intermediary = require('./fixtures/intermediary');
+                test.equal(intermediary.bar(), 'real foo');
+                test.done();
+            }
+        })
     })
 
 });
