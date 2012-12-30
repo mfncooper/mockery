@@ -348,6 +348,7 @@ module.exports = testCase({
                 mock_console.restore();
                 test.done();
             },
+
             "and warnings are disabled": testCase({
                 setUp: function (callback) {
                     mockery.warnOnReplace(false);
@@ -427,6 +428,7 @@ module.exports = testCase({
                 mock_console.restore();
                 test.done();
             },
+
             "and warnings are disabled": testCase({
                 setUp: function (callback) {
                     mockery.warnOnReplace(false);
@@ -479,6 +481,7 @@ module.exports = testCase({
                 test.done();
             }
         }),
+
         "and mockery is enabled without the clean cache option": testCase({
             setUp: function (callback) {
                 mockery.registerMock('./fake_module', mock_fake_module);
@@ -493,6 +496,7 @@ module.exports = testCase({
                 test.done();
             }
         }),
+
         "and mockery is enabled with the clean cache option": testCase({
             setUp: function (callback) {
                 mockery.registerMock('./fake_module', mock_fake_module);
@@ -507,6 +511,7 @@ module.exports = testCase({
                 test.done();
             }
         }),
+
         "and mockery is disabled": testCase({
             "requiring the intermediary causes the original to be used": function (test) {
                 var intermediary = require('./fixtures/intermediary');
