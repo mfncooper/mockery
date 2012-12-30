@@ -17,6 +17,17 @@ Mockery is *not* a mocking framework. It lets you work more easily with your
 framework of choice (or no framework) to get your mocks hooked in to all the
 right places in the code you need to test.
 
+* [Installation](#installation)
+* [Enabling mockery](#enabling-mockery)
+* [Registering mocks](#registering-mocks)
+* [Registering substitutes](#registering-substitutes)
+* [Registering allowable modules](#registering-allowable-modules)
+* [Deregistering everything](#deregistering-everything)
+* [Controlling the module cache](#controlling-the-module-cache)
+* [Disabling warnings](#disabling-warnings)
+* [The name](#the-name)
+* [License](#license)
+
 ## Installation
 
 Just use npm:
