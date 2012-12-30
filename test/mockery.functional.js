@@ -397,6 +397,11 @@ module.exports = testCase({
             callback();
         },
 
+        tearDown: function (callback) {
+            mockery.deregisterSubstitute('./fixtures/fake_module');
+            callback();
+        },
+
         "and mockery is enabled": testCase({
             setUp: function (callback) {
                 mockery.enable();
