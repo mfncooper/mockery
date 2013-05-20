@@ -484,7 +484,7 @@ module.exports = testCase({
 
         "and mockery is enabled without the clean cache option": testCase({
             setUp: function (callback) {
-                mockery.registerMock('./fake_module', mock_fake_module);
+                mockery.registerMock('./fixtures/fake_module', mock_fake_module);
                 mockery.registerAllowable('./fixtures/intermediary');
                 mockery.enable({ useCleanCache: false });
                 callback();
@@ -499,7 +499,7 @@ module.exports = testCase({
 
         "and mockery is enabled with the clean cache option": testCase({
             setUp: function (callback) {
-                mockery.registerMock('./fake_module', mock_fake_module);
+                mockery.registerMock('./fixtures/fake_module', mock_fake_module);
                 mockery.registerAllowable('./fixtures/intermediary');
                 mockery.enable({ useCleanCache: true });
                 callback();

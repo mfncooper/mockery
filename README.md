@@ -89,8 +89,7 @@ You register your mocks with Mockery to tell it which mocks to provide for which
 The arguments to `registerMock` are as follows:
 
 * _module_, the name or path of the module for which a mock is being
-registered. This must exactly match the argument to `require`; there is no
-"clever" matching.
+registered. Path to the _module_ is resolved the same way as when `require` is used.
 * _mock_, the mock to be provided. Whatever is provided here is what will
 become the result of subsequent `require` calls; that is, the `exports` of the
 module.
@@ -115,8 +114,7 @@ module instead.
 The arguments to `registerSubstitute` are as follows:
 
 * _module_, the name or path of the module for which a substitute is being
-registered. This must exactly match the argument to `require`; there is no
-"clever" matching.
+registered. Path to the _module_ is resolved the same way as when `require` is used.
 * _substitute_, the name or path of the module to substitute for _module_.
 
 If you no longer want your substitute to be used, you can deregister it:
