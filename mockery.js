@@ -32,28 +32,29 @@
  * 'require' can be mocked out.
  */
 
-/*jslint nomen: true */
-
 "use strict";
 
-var m = require('module'),
-    registeredMocks = {},
-    registeredSubstitutes = {},
-    registeredAllowables = {},
-    originalLoader = null,
-    originalCache = null,
-    defaultOptions = {
+var defaultOptions = {
         useCleanCache: false,
         warnOnReplace: true,
         warnOnUnregistered: true
-    },
-    options = {};
+    };
+
+function Mockery(){
+    this.m = require('module');
+    this.registeredMocks = {};
+    this.registeredSubstitutes = {};
+    this.registeredAllowables = {};
+    this.originalLoader = null;
+    this.originalCache = null;
+    this.options = {};
+}
 
 /*
  * Merge the supplied options in with a new copy of the default options to get
  * the effective options, and return those.
  */
-function getEffectiveOptions(opts) {
+Mockery.prototype.getEffectiveOptions = function (opts) {
     var options = {};
 
     Object.keys(defaultOptions).forEach(function (key) {
@@ -65,7 +66,7 @@ function getEffectiveOptions(opts) {
         });
     }
     return options;
-}
+};
 
 /*
  * The perils of using internal functions. The Node-internal _resolveFilename
@@ -74,13 +75,13 @@ function getEffectiveOptions(opts) {
  * it returned an array. Instead of playing version number tricks, just check
  * for an array and pull the filename from that if necessary.
  */
-function resolveFilename(request, parent) {
-    var filename = m._resolveFilename(request, parent);
+Mockery.prototype.resolveFilename = function (request, parent) {
+    var filename = this.m._resolveFilename(request, parent);
     if (Array.isArray(filename)) {
         filename = filename[1];
     }
     return filename;
-}
+};
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -89,43 +90,42 @@ function resolveFilename(request, parent) {
  * The signature of this function *must* match that of Node's Module._load,
  * since it will replace that when mockery is enabled.
  */
-function hookedLoader(request, parent, isMain) {
+ function hookedLoader(request, parent, isMain) {
     var subst, allow, file;
-
-    if (!originalLoader) {
-        throw new Error("Loader has not been hooked");
+    if (!this.originalLoader) {
+        throw new Error('Loader has not been hooked');
     }
 
-    if (registeredMocks.hasOwnProperty(request)) {
-        return registeredMocks[request];
+    if (this.registeredMocks.hasOwnProperty(request)) {
+        return this.registeredMocks[request];
     }
 
-    if (registeredSubstitutes.hasOwnProperty(request)) {
-        subst = registeredSubstitutes[request];
+    if (this.registeredSubstitutes.hasOwnProperty(request)) {
+        subst = this.registeredSubstitutes[request];
         if (!subst.module && subst.name) {
-            subst.module = originalLoader(subst.name, parent, isMain);
+            subst.module = this.originalLoader(subst.name, parent, isMain);
         }
         if (!subst.module) {
-            throw new Error("Misconfigured substitute for '" + request + "'");
+            throw new Error('Misconfigured substitute for "' + request + '"');
         }
         return subst.module;
     }
 
-    if (registeredAllowables.hasOwnProperty(request)) {
-        allow = registeredAllowables[request];
+    if (this.registeredAllowables.hasOwnProperty(request)) {
+        allow = this.registeredAllowables[request];
         if (allow.unhook) {
-            file = resolveFilename(request, parent);
+            file = this.resolveFilename(request, parent);
             if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
                 allow.paths.push(file);
             }
         }
     } else {
-        if (options.warnOnUnregistered) {
-            console.warn("WARNING: loading non-allowed module: " + request);
+        if (this.options.warnOnUnregistered) {
+            console.warn('WARNING: loading non-allowed module: ' + request);
         }
     }
 
-    return originalLoader(request, parent, isMain);
+    return this.originalLoader(request, parent, isMain);
 }
 
 /*
@@ -133,69 +133,69 @@ function hookedLoader(request, parent, isMain) {
  * 'require' invocations will be hooked until 'disable' is called. Calling this
  * function more than once will have no ill effects.
  */
-function enable(opts) {
-    if (originalLoader) {
+Mockery.prototype.enable = function (opts) {
+    if (this.originalLoader) {
         // Already hooked
         return;
     }
 
-    options = getEffectiveOptions(opts);
+    this.options = this.getEffectiveOptions(opts);
 
-    if (options.useCleanCache) {
-        originalCache = m._cache;
-        m._cache = {};
+    if (this.options.useCleanCache) {
+        this.originalCache = this.m._cache;
+        this.m._cache = {};
     }
 
-    originalLoader = m._load;
-    m._load = hookedLoader;
-}
+    this.originalLoader = this.m._load;
+    this.m._load = hookedLoader.bind(this);
+};
 
 /*
  * Disables mockery by unhooking from the Node loader. No subsequent 'require'
  * invocations will be seen by mockery. Calling this function more than once
  * will have no ill effects.
  */
-function disable() {
-    if (!originalLoader) {
+Mockery.prototype.disable = function () {
+    if (!this.originalLoader) {
         // Not hooked
         return;
     }
 
-    if (options.useCleanCache) {
-        m._cache = originalCache;
-        originalCache = null;
+    if (this.options.useCleanCache) {
+        this.m._cache = this.originalCache;
+        this.originalCache = null;
     }
 
-    m._load = originalLoader;
-    originalLoader = null;
-}
+    this.m._load = this.originalLoader;
+    this.originalLoader = null;
+};
 
  /*
  * If the clean cache option is in effect, reset the module cache to an empty
  * state. Calling this function when the clean cache option is not in effect
  * will have no ill effects, but will do nothing.
  */
-function resetCache() {
-    if (options.useCleanCache && originalCache) {
-        m._cache = {};
+Mockery.prototype.resetCache = function () {
+    if (this.options.useCleanCache && this.originalCache) {
+        this.m._cache = {};
     }
-}
+};
 
 /*
  * Enable or disable warnings to the console when previously registered mocks
  * and subsitutes are replaced.
  */
-function warnOnReplace(enable) {
-    options.warnOnReplace = enable;
-}
+Mockery.prototype.warnOnReplace = function (enable) {
+    this.options.warnOnReplace = enable;
+};
 
 /*
  * Enable or disable warnings to the console when modules are loaded that have
  * not been registered as a mock, a substitute, or allowed.
  */
-function warnOnUnregistered(enable) {
-    options.warnOnUnregistered = enable;
-}
+Mockery.prototype.warnOnUnregistered = function (enable) {
+    this.options.warnOnUnregistered = enable;
+};
 
 /*
  * Register a mock object for the specified module. While mockery is enabled,
@@ -203,23 +203,23 @@ function warnOnUnregistered(enable) {
  * mock need not mock out all original exports, but no fallback is provided
  * for anything not mocked and subsequently invoked.
  */
-function registerMock(mod, mock) {
-    if (options.warnOnReplace && registeredMocks.hasOwnProperty(mod)) {
-        console.warn("WARNING: Replacing existing mock for module: " + mod);
+Mockery.prototype.registerMock = function (mod, mock) {
+    if (this.options.warnOnReplace && this.registeredMocks.hasOwnProperty(mod)) {
+        console.warn('WARNING: Replacing existing mock for module: ' + mod);
     }
-    registeredMocks[mod] = mock;
-}
+    this.registeredMocks[mod] = mock;
+};
 
 /*
  * Deregister a mock object for the specified module. A subsequent 'require' for
  * that module will revert to the previous behaviour (which, by default, means
  * falling back to the original 'require' behaviour).
  */
-function deregisterMock(mod) {
-    if (registeredMocks.hasOwnProperty(mod)) {
-        delete registeredMocks[mod];
+Mockery.prototype.deregisterMock = function (mod) {
+    if (this.registeredMocks.hasOwnProperty(mod)) {
+        delete this.registeredMocks[mod];
     }
-}
+};
 
 /*
  * Register a substitute module for the specified module. While mockery is
@@ -227,25 +227,25 @@ function deregisterMock(mod) {
  * replaced by a 'require' for the substitute module. This is useful when
  * a mock implementation is itself implemented as a module.
  */
-function registerSubstitute(mod, subst) {
-    if (options.warnOnReplace && registeredSubstitutes.hasOwnProperty(mod)) {
-        console.warn("WARNING: Replacing existing substitute for module: " + mod);
+Mockery.prototype.registerSubstitute = function (mod, subst) {
+    if (this.options.warnOnReplace && this.registeredSubstitutes.hasOwnProperty(mod)) {
+        console.warn('WARNING: Replacing existing substitute for module: ' + mod);
     }
-    registeredSubstitutes[mod] = {
+    this.registeredSubstitutes[mod] = {
         name: subst
     };
-}
+};
 
 /*
  * Deregister a substitute module for the specified module. A subsequent
  * 'require' for that module will revert to the previous behaviour (which, by
  * default, means falling back to the original 'require' behaviour).
  */
-function deregisterSubstitute(mod) {
-    if (registeredSubstitutes.hasOwnProperty(mod)) {
-        delete registeredSubstitutes[mod];
+Mockery.prototype.deregisterSubstitute = function (mod) {
+    if (this.registeredSubstitutes.hasOwnProperty(mod)) {
+        delete this.registeredSubstitutes[mod];
     }
-}
+};
 
 /*
  * Register a module as 'allowed', meaning that, even if a mock or substitute
@@ -256,84 +256,91 @@ function deregisterSubstitute(mod) {
  * If 'unhook' is true, the module will be removed from the module cache when
  * it is deregistered.
  */
-function registerAllowable(mod, unhook) {
-    registeredAllowables[mod] = {
+Mockery.prototype.registerAllowable = function (mod, unhook) {
+    this.registeredAllowables[mod] = {
         unhook: !!unhook,
         paths: []
     };
-}
+};
 
 /*
  * Register an array of modules as 'allowed'. This is a convenience function
  * that performs the same function as 'registerAllowable' but for an array of
  * modules rather than a single module.
  */
-function registerAllowables(mods, unhook) {
+Mockery.prototype.registerAllowables = function (mods, unhook) {
+    var mockery = this;
+
     mods.forEach(function (mod) {
-        registerAllowable(mod, unhook);
+        mockery.registerAllowable(mod, unhook);
     });
-}
+};
 
 /*
+
  * Deregister a module as 'allowed'. A subsequent 'require' for that module
  * will generate a warning that the module is not allowed, unless or until a
  * mock or substitute is registered for that module.
  */
-function deregisterAllowable(mod) {
-    if (registeredAllowables.hasOwnProperty(mod)) {
-        var allow = registeredAllowables[mod];
+Mockery.prototype.deregisterAllowable = function (mod) {
+    var mockery = this;
+
+    if (this.registeredAllowables.hasOwnProperty(mod)) {
+        var allow = this.registeredAllowables[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
-                delete m._cache[p];
+                delete mockery.m._cache[p];
             });
         }
-        delete registeredAllowables[mod];
+        delete this.registeredAllowables[mod];
     }
-}
+};
 
 /*
  * Deregister an array of modules as 'allowed'. This is a convenience function
  * that performs the same function as 'deregisterAllowable' but for an array of
  * modules rather than a single module.
  */
-function deregisterAllowables(mods) {
+Mockery.prototype.deregisterAllowables = function (mods) {
+    var mockery = this;
+
     mods.forEach(function (mod) {
-        deregisterAllowable(mod);
+        mockery.deregisterAllowable(mod);
     });
-}
+};
 
 /*
  * Deregister all mocks, substitutes, and allowed modules, resetting the state
  * to a clean slate. This does not affect the enabled / disabled state of
  * mockery, though.
  */
-function deregisterAll() {
-    Object.keys(registeredAllowables).forEach(function (mod) {
-        var allow = registeredAllowables[mod];
+Mockery.prototype.deregisterAll = function () {
+    var mockery = this;
+
+    Object.keys(this.registeredAllowables).forEach(function (mod) {
+        var allow = mockery.registeredAllowables[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
-                delete m._cache[p];
+                delete mockery.m._cache[p];
             });
         }
     });
 
-    registeredMocks = {};
-    registeredSubstitutes = {};
-    registeredAllowables = {};
+    this.registeredMocks = {};
+    this.registeredSubstitutes = {};
+    this.registeredAllowables = {};
+};
+
+// Dodgey way of making the constructor an instance of itself to not break backwards compatability
+var instance = new Mockery();
+for(var key in instance){
+    var property = instance[key];
+    if(typeof property === 'function'){
+        property = property.bind(instance);
+    }
+    Mockery[key] = property;
 }
 
-// Exported functions
-exports.enable = enable;
-exports.disable = disable;
-exports.resetCache = resetCache;
-exports.warnOnReplace = warnOnReplace;
-exports.warnOnUnregistered = warnOnUnregistered;
-exports.registerMock = registerMock;
-exports.registerSubstitute = registerSubstitute;
-exports.registerAllowable = registerAllowable;
-exports.registerAllowables = registerAllowables;
-exports.deregisterMock = deregisterMock;
-exports.deregisterSubstitute = deregisterSubstitute;
-exports.deregisterAllowable = deregisterAllowable;
-exports.deregisterAllowables = deregisterAllowables;
-exports.deregisterAll = deregisterAll;
+module.exports = Mockery;
+
+

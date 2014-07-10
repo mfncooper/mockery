@@ -35,7 +35,8 @@
 "use strict";
 
 var testCase = require('nodeunit').testCase,
-    mockery = require('../mockery'),
+    Mockery = require('../mockery'),
+    mockery = new Mockery(),
     sinon = require('sinon'),
     m = require('module');
 
@@ -69,7 +70,7 @@ module.exports = testCase({
         callback();
     },
 
-    "when mockery is used directly": testCase({
+    "when a new instance of mockery is used": testCase({
         "when nothing is registered": testCase({
             "and mockery is enabled": testCase({
                 setUp: function (callback) {
