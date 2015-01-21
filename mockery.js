@@ -74,8 +74,10 @@ function getEffectiveOptions(opts) {
  * it returned an array. Instead of playing version number tricks, just check
  * for an array and pull the filename from that if necessary.
  */
+ //TODO Remove this whole method.
 function resolveFilename(request, parent) {
     var filename = m._resolveFilename(request, parent);
+    /*istanbul ignore next - This is for node < 0.6 which we don't care about. Can be removed. */
     if (Array.isArray(filename)) {
         filename = filename[1];
     }
@@ -114,6 +116,7 @@ function hookedLoader(request, parent, isMain) {
     if (registeredAllowables.hasOwnProperty(request)) {
         allow = registeredAllowables[request];
         if (allow.unhook) {
+            /* TODO: Change this to m._resolveFilename */
             file = resolveFilename(request, parent);
             if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
                 allow.paths.push(file);
