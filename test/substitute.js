@@ -28,11 +28,17 @@ var tests = {
                 var fake_module = require('./fixtures/fake_module');
                 assert.equal(fake_module.foo(), 'substitute foo');
             },
-            "throws on an invalid substitute": function() {
+            "throws on an invalid module": function() {
                 assert.throws(function() {
                     mockery.registerSubstitute('fs', 'does-not-exist-fs');
                     require('fs');
                 }, /Cannot find module/);
+            },
+            "throws on an invalid substitute module": function() {
+                assert.throws(function() {
+                    mockery.registerSubstitute('fs');
+                    require('fs');
+                }, /Misconfigured substitute for/);
             },
             "registering a replacement causes a warning to be logged": function () {
                 var mock_console;

@@ -11,6 +11,8 @@ var tests = {
     "when nothing is registered": {
         topic: function () {
             mockery.enable();
+            mockery.registerAllowable('../package.json', true);
+            require('../package.json');
             return null;
         },
         "requiring a module causes a warning to be logged": function () {
