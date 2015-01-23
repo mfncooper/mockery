@@ -1,41 +1,51 @@
 {
-  "name": "mockery",
-  "version": "1.4.0",
-  "description": "Simplifying the use of mocks with Node.js",
-  "keywords": [
-    "mock", "stub", "require", "module", "cache",
-    "unit", "test", "unittest", "testing", "tdd"
-  ],
-  "author": "Martin Cooper <mfncooper@gmail.com>",
-  "contributors": [
-    {
-      "name": "Bryan Donovan",
-      "email": "bdondo@gmail.com"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/mfncooper/mockery.git"
-  },
-  "bugs": {
-    "url" : "http://github.com/mfncooper/mockery/issues"
-  },
-  "main": "mockery.js",
-  "engines": {
-    "node": ">=0.4.5"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "nodeunit" : "0.6.x",
-    "sinon" : "1.2.x"
-  },
-  "scripts": {
-    "test": "test/run.js"
-  },
-  "licenses" : [
-    {
-      "type" : "MIT",
-      "url" : "http://github.com/mfncooper/mockery/raw/master/LICENSE"
-    }
-  ]
+    "name": "mockery",
+    "version": "1.4.0",
+    "description": "Simplifying the use of mocks with Node.js",
+    "keywords": [
+        "mock",
+        "stub",
+        "require",
+        "module",
+        "cache",
+        "unit",
+        "test",
+        "unittest",
+        "testing",
+        "tdd"
+    ],
+    "author": "Martin Cooper <mfncooper@gmail.com>",
+    "contributors": [
+        {
+            "name": "Bryan Donovan",
+            "email": "bdondo@gmail.com"
+        },
+        {
+            "name": "Dav Glass",
+            "email": "davglass@gmail.com"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/mfncooper/mockery.git"
+    },
+    "bugs": {
+        "url": "http://github.com/mfncooper/mockery/issues"
+    },
+    "main": "mockery.js",
+    "dependencies": {},
+    "devDependencies": {
+        "istanbul": "~0.3.5",
+        "sinon": "1.2.x",
+        "vows": "~0.8.1"
+    },
+    "scripts": {
+        "test": "istanbul cover --print both -- vows --spec ./test/*.js"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://github.com/mfncooper/mockery/raw/master/LICENSE"
+        }
+    ]
 }
