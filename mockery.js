@@ -32,8 +32,6 @@
  * 'require' can be mocked out.
  */
 
-/*jslint nomen: true */
-
 "use strict";
 
 var m = require('module'),
