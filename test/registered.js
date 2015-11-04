@@ -27,6 +27,11 @@ var tests = {
             mockery.registerAllowable('./fixtures/fake_module');
             var fake_module = require('./fixtures/fake_module');
             assert.equal(fake_module.foo(), 'real foo');
+
+            mockery.registerAllowableRegExp(/.+\$\.object-assign/ig);
+            //require without a warning
+            var objectAssign = require('./fixtures/$.object-assign');
+            assert.equal(objectAssign.foo(), 'object assign');
         },
         "and mockery is then disabled requiring the module returns the original module": function () {
             mockery.disable();

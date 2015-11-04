@@ -153,6 +153,15 @@ and similarly to deregister several modules at once, as you would expect:
 
     mockery.deregisterAllowables(['async', 'path', 'util']);
 
+Sometimes it's useful to allow bunch of modules to be allowed without a warnings.
+For example, when your code transpiled via babel. In that case you can allow them
+
+    mockery.registerAllowableRegExp(/.+\$\.object-assign/ig);
+
+and similarly to deregister module, as you would expect:
+
+    mockery.deregisterAllowableRegExp(/.+\$\.object-assign/ig);
+
 ### Unhooking
 
 By default, the Node module loader will load a given module only once, caching
