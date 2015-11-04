@@ -153,7 +153,7 @@ and similarly to deregister several modules at once, as you would expect:
 
     mockery.deregisterAllowables(['async', 'path', 'util']);
 
-Sometimes it's useful to allow bunch of modules to be allowed without a warnings.
+Sometimes it's useful to allow bunch of modules without a warnings.
 For example, when your code transpiled via babel. In that case you can allow them
 
     mockery.registerAllowableRegExp(/.+\$\.object-assign/ig);

@@ -95,10 +95,12 @@ function hookedLoader(request, parent, isMain) {
         return subst.module;
     }
 
-    if ((registeredAllowables.hasOwnProperty(request) && (
-        allow = registeredAllowables[request])
-      ) || (allow = isRequesRegisteredAsRegexp(request))
-    ) {
+    if (registeredAllowables.hasOwnProperty(request)) {
+        allow = registeredAllowables[request];
+    } else {
+        allow = isRequesRegisteredAsRegexp(request);
+    }
+    if (allow) {
         if (allow.unhook) {
             file = m._resolveFilename(request, parent);
             if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
@@ -266,7 +268,7 @@ function registerAllowables(mods, unhook) {
  * not complain when it is loaded via 'require'.
  */
 function registerAllowableRegExp(regExp, unhook) {
-    registeredAllowableRegExps[String(regExp)] = {
+    registeredAllowableRegExps[regExp] = {
         unhook: !!unhook,
         paths: [],
         regExp: regExp
@@ -331,7 +333,7 @@ function deregisterAllowables(mods) {
  * registered for that module.
  */
 function deregisterAllowableRegExp(regExp) {
-    if (registeredAllowableRegExps.hasOwnProperty(String(regExp))) {
+    if (registeredAllowableRegExps.hasOwnProperty(regExp)) {
         var allow = registeredAllowableRegExps[regExp];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
