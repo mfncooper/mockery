@@ -98,7 +98,7 @@ function hookedLoader(request, parent, isMain) {
         allow = registeredAllowables[request];
         if (allow.unhook) {
             file = m._resolveFilename(request, parent);
-            if (file.indexOf('/') !== -1 && allow.paths.indexOf(file) === -1) {
+            if ((file.indexOf('/') !== -1 || file.indexOf('\\') !== -1) && allow.paths.indexOf(file) === -1) {
                 allow.paths.push(file);
             }
         }
