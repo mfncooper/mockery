@@ -108,17 +108,6 @@ function hookedLoader(request, parent, isMain) {
         }
     }
 
-    // Starting in node 0.12 node won't reload native modules
-    // The reason is that native modules can register themselves to be loaded automatically
-    // This will re-populate the cache with the native modules that have not been mocked
-    if(originalCache) {
-        Object.keys(originalCache).forEach(function(k) {
-            if (k.indexOf('\.node') > -1 && !m._cache[k]) {
-                m._cache[k] = originalCache[k];
-            }
-        });
-    }
-
     return originalLoader(request, parent, isMain);
 }
 
@@ -138,6 +127,7 @@ function enable(opts) {
     if (options.useCleanCache) {
         originalCache = m._cache;
         m._cache = {};
+        repopulateNative();
     }
 
     originalLoader = m._load;
@@ -172,7 +162,21 @@ function disable() {
 function resetCache() {
     if (options.useCleanCache && originalCache) {
         m._cache = {};
+        repopulateNative();
     }
+}
+
+/*
+ * Starting in node 0.12 node won't reload native modules
+ * The reason is that native modules can register themselves to be loaded automatically
+ * This will re-populate the cache with the native modules that have not been mocked
+ */
+function repopulateNative() {
+  Object.keys(originalCache).forEach(function(k) {
+      if (k.indexOf('\.node') > -1 && !m._cache[k]) {
+          m._cache[k] = originalCache[k];
+      }
+  });
 }
 
 /*
