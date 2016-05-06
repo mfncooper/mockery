@@ -146,6 +146,16 @@ function disable() {
     }
 
     if (options.useCleanCache) {
+        // Previously this just set m._cache to originalCache. This would make
+        // node re-require native addons that were required while mockery was
+        // enabled, which breaks it in node@>=0.12. Instead populate
+        // originalCache with any native addons that were first required since
+        // mockery was enabled.
+        Object.keys(m._cache).forEach(function(k){
+            if (k.indexOf('\.node') > -1 && !originalCache[k]) {
+                originalCache[k] = m._cache[k];
+            }
+        });
         m._cache = originalCache;
         originalCache = null;
     }
