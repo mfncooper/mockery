@@ -41,6 +41,7 @@
     "istanbul": "~0.3.5",
     "jshint": "~2.6.0",
     "sinon": "1.2.x",
+    "unix-dgram": "^0.2.3",
     "vows": "~0.8.1"
   },
   "scripts": {
