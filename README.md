@@ -1,6 +1,6 @@
 # Mockery - Simplifying the use of mocks with Node.js
 
-[![Build Status](https://secure.travis-ci.org/mfncooper/mockery.png)](http://travis-ci.org/mfncooper/mockery)
+[![Build Status](https://secure.travis-ci.org/mfncooper/mockery.svg)](http://travis-ci.org/mfncooper/mockery)
 
 If you've tried working with mocks in Node.js, you've no doubt discovered that
 it's not so easy to get your mocks hooked up in the face of Node's module
