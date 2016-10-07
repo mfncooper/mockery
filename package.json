@@ -1,6 +1,6 @@
 {
   "name": "mockery",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "description": "Simplifying the use of mocks with Node.js",
   "keywords": [
     "mock",
