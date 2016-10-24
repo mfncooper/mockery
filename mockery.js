@@ -43,7 +43,8 @@ var m = require('module'),
     defaultOptions = {
         useCleanCache: false,
         warnOnReplace: true,
-        warnOnUnregistered: true
+        warnOnUnregistered: true,
+        throwOnUnregistered: false
     },
     options = {};
 
@@ -105,6 +106,9 @@ function hookedLoader(request, parent, isMain) {
     } else {
         if (options.warnOnUnregistered) {
             console.warn("WARNING: loading non-allowed module: " + request);
+        }
+        if (options.throwOnUnregistered) {
+            throw new Error("loading non-allowed module: " + request);
         }
     }
 
@@ -205,6 +209,14 @@ function warnOnReplace(enable) {
  */
 function warnOnUnregistered(enable) {
     options.warnOnUnregistered = enable;
+}
+
+/*
+ * Enable or disable exceptions to be thrown when modules are loaded that have
+ * not been registered as a mock, a substitute, or allowed.
+ */
+function throwOnUnregistered(enable) {
+    options.throwOnUnregistered = enable;
 }
 
 /*
@@ -355,6 +367,7 @@ exports.disable = disable;
 exports.resetCache = resetCache;
 exports.warnOnReplace = warnOnReplace;
 exports.warnOnUnregistered = warnOnUnregistered;
+exports.throwOnUnregistered = throwOnUnregistered;
 exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
