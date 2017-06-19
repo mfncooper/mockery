@@ -341,7 +341,7 @@ function removeParentReferences() {
         if (k.indexOf('\.node') === -1) {
             // don't touch native modules, because they're special
             var mod = m._cache[k];
-            var idx = mod.parent.children.indexOf(mod);
+            var idx = mod.parent && mod.parent.children && mod.parent.children.indexOf(mod);
             if (idx > -1) {
                 mod.parent.children.splice(idx, 1);
             }
