@@ -38,6 +38,7 @@ var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
     registeredAllowables = {},
+    registeredAllowableRegExps = {},
     originalLoader = null,
     originalCache = null,
     defaultOptions = {
@@ -96,6 +97,10 @@ function hookedLoader(request, parent, isMain) {
 
     if (registeredAllowables.hasOwnProperty(request)) {
         allow = registeredAllowables[request];
+    } else {
+        allow = isRequesRegisteredAsRegexp(request);
+    }
+    if (allow) {
         if (allow.unhook) {
             file = m._resolveFilename(request, parent);
             if ((file.indexOf('/') !== -1 || file.indexOf('\\') !== -1) && allow.paths.indexOf(file) === -1) {
@@ -284,6 +289,42 @@ function registerAllowables(mods, unhook) {
     });
 }
 
+/**
+ * Register a module as 'allowed' using regular expression as a module name,
+ * even if a mock or substitute for it has not been registered, mockery will
+ * not complain when it is loaded via 'require'.
+ */
+function registerAllowableRegExp(regExp, unhook) {
+    registeredAllowableRegExps[regExp] = {
+        unhook: !!unhook,
+        paths: [],
+        regExp: regExp
+    };
+}
+
+/**
+ * check if request is 'allowed'
+ * @param request {String}
+ */
+function isRequesRegisteredAsRegexp(request) {
+
+    var
+      regExps = Object.keys(registeredAllowableRegExps),
+      regExpsLen = regExps.length,
+      allow;
+
+    if (!regExpsLen) {
+        return false;
+    }
+    while(regExpsLen--) {
+        allow = registeredAllowableRegExps[regExps[regExpsLen]];
+        if (request.match(allow.regExp)) {
+            return allow;
+        }
+    }
+    return false;
+}
+
 /*
  * Deregister a module as 'allowed'. A subsequent 'require' for that module
  * will generate a warning that the module is not allowed, unless or until a
@@ -313,13 +354,32 @@ function deregisterAllowables(mods) {
 }
 
 /*
+ * Deregister a module as 'allowed' which has been registered as regexp.
+ * A subsequent 'require' for that module will generate a warning that
+ * the module is not allowed, unless or until a mock or substitute is
+ * registered for that module.
+ */
+function deregisterAllowableRegExp(regExp) {
+    if (registeredAllowableRegExps.hasOwnProperty(regExp)) {
+        var allow = registeredAllowableRegExps[regExp];
+        if (allow.unhook) {
+            allow.paths.forEach(function (p) {
+                delete m._cache[p];
+            });
+        }
+        delete registeredAllowableRegExps[regExp];
+    }
+}
+
+/*
  * Deregister all mocks, substitutes, and allowed modules, resetting the state
  * to a clean slate. This does not affect the enabled / disabled state of
  * mockery, though.
  */
 function deregisterAll() {
-    Object.keys(registeredAllowables).forEach(function (mod) {
-        var allow = registeredAllowables[mod];
+    Object.keys(registeredAllowables).concat(Object.keys(registeredAllowableRegExps))
+      .forEach(function (mod) {
+        var allow = registeredAllowables[mod] || registeredAllowableRegExps[mod];
         if (allow.unhook) {
             allow.paths.forEach(function (p) {
                 delete m._cache[p];
@@ -330,6 +390,7 @@ function deregisterAll() {
     registeredMocks = {};
     registeredSubstitutes = {};
     registeredAllowables = {};
+    registeredAllowableRegExps = {};
 }
 
 /**
@@ -359,8 +420,10 @@ exports.registerMock = registerMock;
 exports.registerSubstitute = registerSubstitute;
 exports.registerAllowable = registerAllowable;
 exports.registerAllowables = registerAllowables;
+exports.registerAllowableRegExp = registerAllowableRegExp;
 exports.deregisterMock = deregisterMock;
 exports.deregisterSubstitute = deregisterSubstitute;
 exports.deregisterAllowable = deregisterAllowable;
 exports.deregisterAllowables = deregisterAllowables;
+exports.deregisterAllowableRegExp = deregisterAllowableRegExp;
 exports.deregisterAll = deregisterAll;
