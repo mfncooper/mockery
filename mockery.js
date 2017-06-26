@@ -38,7 +38,6 @@ var m = require('module'),
     registeredMocks = {},
     registeredSubstitutes = {},
     registeredAllowables = {},
-    originalLoader = null,
     originalCache = null,
     defaultOptions = {
         useCleanCache: false,
@@ -75,7 +74,7 @@ function getEffectiveOptions(opts) {
 function hookedLoader(request, parent, isMain) {
     var subst, allow, file;
 
-    if (!originalLoader) {
+    if (!m.__load) {
         throw new Error("Loader has not been hooked");
     }
 
@@ -86,7 +85,7 @@ function hookedLoader(request, parent, isMain) {
     if (registeredSubstitutes.hasOwnProperty(request)) {
         subst = registeredSubstitutes[request];
         if (!subst.module && subst.name) {
-            subst.module = originalLoader(subst.name, parent, isMain);
+            subst.module = m.__load(subst.name, parent, isMain);
         }
         if (!subst.module) {
             throw new Error("Misconfigured substitute for '" + request + "'");
@@ -108,7 +107,7 @@ function hookedLoader(request, parent, isMain) {
         }
     }
 
-    return originalLoader(request, parent, isMain);
+    return m.__load(request, parent, isMain);
 }
 
 /*
@@ -117,7 +116,7 @@ function hookedLoader(request, parent, isMain) {
  * function more than once will have no ill effects.
  */
 function enable(opts) {
-    if (originalLoader) {
+    if (m.__load) {
         // Already hooked
         return;
     }
@@ -130,7 +129,7 @@ function enable(opts) {
         repopulateNative();
     }
 
-    originalLoader = m._load;
+    m.__load = m._load;
     m._load = hookedLoader;
 }
 
@@ -140,7 +139,7 @@ function enable(opts) {
  * will have no ill effects.
  */
 function disable() {
-    if (!originalLoader) {
+    if (!m.__load) {
         // Not hooked
         return;
     }
@@ -161,8 +160,8 @@ function disable() {
         originalCache = null;
     }
 
-    m._load = originalLoader;
-    originalLoader = null;
+    m._load = m.__load;
+    m.__load = null;
 }
 
  /*

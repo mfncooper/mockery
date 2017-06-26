@@ -6,6 +6,7 @@ module and test the dead code cases.
 var vows = require('vows'),
     assert = require('assert'),
     m = require('module'),
+    originalLoader, 
     mockery = require('../mockery');
 
 var tests = {
@@ -19,7 +20,7 @@ var tests = {
         },
         'and without a module loader': {
             topic: function() {
-                m.__load = m._load;
+                originalLoader = m._load;
                 m._load = null;
                 return m;
             },
@@ -31,8 +32,7 @@ var tests = {
                 }, /Loader has not been hooked/);
             },
             teardown: function() {
-                m._load = m.__load;
-                delete m.__load;
+                m._load = originalLoader;
             }
         }
     }
