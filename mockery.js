@@ -156,7 +156,7 @@ function disable() {
                 originalCache[k] = m._cache[k];
             }
         });
-        removeParentReferences();
+        removeModuleCacheReferences();
         m._cache = originalCache;
         originalCache = null;
     }
@@ -172,7 +172,7 @@ function disable() {
  */
 function resetCache() {
     if (options.useCleanCache && originalCache) {
-        removeParentReferences();
+        removeModuleCacheReferences();
         m._cache = {};
         repopulateNative();
     }
@@ -333,19 +333,22 @@ function deregisterAll() {
 }
 
 /**
- * Remove references to modules in the mockery cache from
- * their parents' children.
+ * Remove references to modules in the require cache.
  */
-function removeParentReferences() {
+function removeModuleCacheReferences() {
     Object.keys(m._cache).forEach(function(k){
-        if (k.indexOf('\.node') === -1) {
+        if (k.indexOf('\.node') !== -1) {
             // don't touch native modules, because they're special
-            var mod = m._cache[k];
-            var idx = mod.parent && mod.parent.children && mod.parent.children.indexOf(mod);
-            if (idx > -1) {
-                mod.parent.children.splice(idx, 1);
-            }
+            return;
         }
+
+        var mod = m._cache[k];
+        var idx = !!mod.parent && !!mod.parent.children ? mod.parent.children.indexOf(mod) : -1;
+        if (idx > -1) {
+            mod.parent.children.splice(idx, 1);
+        }
+
+        delete m._cache[k];
     });
 }
 
