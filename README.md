@@ -32,7 +32,9 @@ right places in the code you need to test.
 
 Just use npm:
 
-    npm install mockery
+```shell
+npm install mockery
+```
 
 ## Enabling mockery
 
@@ -44,12 +46,14 @@ If you're using a typical unit testing framework, you might enable and disable
 Mockery in the test setup and teardown functions for your test cases. Something
 like this:
 
-    setUp: function() {
-        mockery.enable();
-    },
-    tearDown: function() {
-        mockery.disable();
-    }
+```js
+setUp: function() {
+    mockery.enable();
+},
+tearDown: function() {
+    mockery.disable();
+}
+```
 
 ### Options
 
@@ -59,10 +63,12 @@ standard defaults to be used.
 
 For example, to disable all warnings, you might use this:
 
-    mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false
-    });
+```js
+mockery.enable({
+    warnOnReplace: false,
+    warnOnUnregistered: false
+});
+```
 
 The available options are:
 
@@ -81,10 +87,12 @@ module is not mocked, substituted or allowed. This has the same effect as the
 You register your mocks with Mockery to tell it which mocks to provide for which
 `require` calls. For example:
 
-    var fsMock = {
-        stat: function (path, cb) { /* your mock code */ }
-    };
-    mockery.registerMock('fs', fsMock);
+```js
+var fsMock = {
+    stat: function (path, cb) { /* your mock code */ }
+};
+mockery.registerMock('fs', fsMock);
+ ```
 
 The arguments to `registerMock` are as follows:
 
@@ -97,7 +105,9 @@ module.
 
 If you no longer want your mock to be used, you can deregister it:
 
-    mockery.deregisterMock('fs');
+```js
+mockery.deregisterMock('fs');
+```
 
 Now the original module will be provided for any subsequent `require` calls.
 
@@ -107,7 +117,9 @@ Sometimes you want to implement your mock itself as a module, especially if it's
 more complicated and you'll be reusing it more widely. In that case, you can
 tell Mockery to substitute that module for the original one. For example:
 
-    mockery.registerSubstitute('fs', 'fs-mock');
+```js
+mockery.registerSubstitute('fs', 'fs-mock');
+```
 
 Now any `require` invocation for 'fs' will be satisfied by loading the 'fs-mock'
 module instead.
@@ -121,7 +133,9 @@ registered. This must exactly match the argument to `require`; there is no
 
 If you no longer want your substitute to be used, you can deregister it:
 
-    mockery.deregisterSubstitute('fs');
+```js
+mockery.deregisterSubstitute('fs');
+```
 
 Now the original module will be provided for any subsequent `require` calls.
 
@@ -136,22 +150,30 @@ that you know about its use, and then Mockery won't print the warning.
 The most common use case for this is your source-under-test, which obviously
 you'll want to load without warnings. For example:
 
-    mockery.registerAllowable('./my-source-under-test');
+```js
+mockery.registerAllowable('./my-source-under-test');
+```
 
 As with `registerMock` and `registerSubstitute`, the first argument, _module_,
 is the name or path of the module as it would be provided to `require`. Once
 again, you can deregister it if you need to:
 
-    mockery.deregisterAllowable('./my-source-under-test');
+```js
+mockery.deregisterAllowable('./my-source-under-test');
+```
 
 Sometimes you'll find that you need to register several modules at once. A
 convenience function lets you do this with a single call:
 
-    mockery.registerAllowables(['async', 'path', 'util']);
+```js
+mockery.registerAllowables(['async', 'path', 'util']);
+```
 
 and similarly to deregister several modules at once, as you would expect:
 
-    mockery.deregisterAllowables(['async', 'path', 'util']);
+```js
+mockery.deregisterAllowables(['async', 'path', 'util']);
+```
 
 ### Unhooking
 
@@ -167,7 +189,9 @@ To do this, your source-under-test must be unhooked from Node's module loading
 system, such that it can be loaded again with new mocks. You do this by passing
 a second argument, _unhook_, to `registerAllowable`, like this:
 
-    mockery.registerAllowable('./my-source-under-test', true);
+```js
+mockery.registerAllowable('./my-source-under-test', true);
+```
 
 When you subsequently deregister your source-under-test, Mockery will unhook it
 from the Node module loading system as well as deregistering it.
@@ -178,7 +202,9 @@ Since it's such a common use case, especially when you're using a unit test
 framework and its setup and teardown functions, Mockery provides a convenience
 function to deregister everything:
 
-    mockery.deregisterAll();
+```js
+mockery.deregisterAll();
+```
 
 This will deregister all mocks, substitutes, and allowable modules, as well as
 unhooking any hooked modules.
@@ -198,7 +224,9 @@ as expected.
 
 You tell Mockery to use a clean cache when you enable it, like this:
 
-    mockery.enable({ useCleanCache: true });
+```js
+mockery.enable({ useCleanCache: true });
+```
 
 Now all modules will be cached in this new clean cache, until you later disable
 Mockery again. The new cache is temporary, and is discarded when Mockery is
@@ -209,7 +237,9 @@ While you are working with a temporary cache, it may occasionally be useful to
 reset it to a clean state again, without disabling and re-enabling Mockery. You
 can do this with:
 
-    mockery.resetCache();
+```js
+mockery.resetCache();
+```
 
 This function has no effect if the clean cache option is not already in use.
 
@@ -225,7 +255,9 @@ you may find it irritating to have to allow each module or to have all the
 warnings appear on the console. If you need to, you can tell Mockery to turn
 off those warnings:
 
-    mockery.warnOnUnregistered(false);
+```js
+mockery.warnOnUnregistered(false);
+```
 
 Mockery will also print a warning to the console whenever you register a mock
 or substitute for a module for which one is already registered. This is almost
@@ -233,7 +265,9 @@ always what you want, since you should be deregistering mocks and substitutes
 that you no longer need. Occasionally, though, you may want to suppress these
 warnings, which you can do like this:
 
-    mockery.warnOnReplace(false);
+```js
+mockery.warnOnReplace(false);
+```
 
 In either of these cases, if you later need to re-enable the warnings, then
 passing `true` to the same functions will do that, as you might imagine.
