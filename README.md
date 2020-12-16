@@ -89,8 +89,9 @@ You register your mocks with Mockery to tell it which mocks to provide for which
 The arguments to `registerMock` are as follows:
 
 * _module_, the name or path of the module for which a mock is being
-registered. This must exactly match the argument to `require`; there is no
-"clever" matching.
+registered. This must exactly match the argument to `require` as it appears in
+the file that actually requires the module being mocked, not as it _would_ appear 
+if required in the test file; there is no "clever" matching.
 * _mock_, the mock to be provided. Whatever is provided here is what will
 become the result of subsequent `require` calls; that is, the `exports` of the
 module.
