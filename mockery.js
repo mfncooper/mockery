@@ -53,17 +53,18 @@ var m = require('module'),
  */
 function getEffectiveOptions(opts) {
     var options = {};
-
-    Object.keys(defaultOptions).forEach(function (key) {
-        options[key] = defaultOptions[key];
-    });
-    if (opts) {
-        Object.keys(opts).forEach(function (key) {
-            options[key] = opts[key];
-        });
+  
+    for (key, value in defaultOptions) {
+      options[key] = value;
     }
+    if (opts) {
+      for (key, value in opts) {
+        options[key] = value;
+      }
+    }
+    options = Object.freeze(options);
     return options;
-}
+  }
 
 /*
  * The (private) loader replacement that is used when hooking is enabled. It
@@ -118,21 +119,22 @@ function hookedLoader(request, parent, isMain) {
  */
 function enable(opts) {
     if (originalLoader) {
-        // Already hooked
-        return;
+      // Already hooked
+      return;
     }
-
+  
     options = getEffectiveOptions(opts);
-
+  
     if (options.useCleanCache) {
-        originalCache = m._cache;
-        m._cache = {};
-        repopulateNative();
+      originalCache = m._cache;
+      m._cache = {};
+      repopulateNative();
     }
-
+  
+    options = Object.freeze(options);
     originalLoader = m._load;
     m._load = hookedLoader;
-}
+  }
 
 /*
  * Disables mockery by unhooking from the Node loader. No subsequent 'require'
