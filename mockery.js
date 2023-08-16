@@ -52,17 +52,22 @@ var m = require('module'),
  * the effective options, and return those.
  */
 function getEffectiveOptions(opts) {
-    var options = {};
+  var effectiveOptions = {};
 
-    Object.keys(defaultOptions).forEach(function (key) {
-        options[key] = defaultOptions[key];
-    });
-    if (opts) {
-        Object.keys(opts).forEach(function (key) {
-            options[key] = opts[key];
-        });
+  for (var key in defaultOptions) {
+    if (defaultOptions.hasOwnProperty(key)) {
+      effectiveOptions[key] = defaultOptions[key];
     }
-    return options;
+  }
+
+  if (opts) {
+    for (var key in effectiveOptions) {
+        if (effectiveOptions.hasOwnProperty(key) && opts.hasOwnProperty(key)) {
+            effectiveOptions[key] = opts[key];
+      }
+    }
+  }
+  return effectiveOptions;
 }
 
 /*
