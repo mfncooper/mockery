@@ -61,9 +61,9 @@ function getEffectiveOptions(opts) {
   }
 
   if (opts) {
-    for (var defaultKey in effectiveOptions) {
-      if (effectiveOptions.hasOwnProperty(defaultKey) && opts[defaultKey]) {
-        effectiveOptions[defaultKey] = opts[defaultKey];
+    for (var key in effectiveOptions) {
+        if (effectiveOptions.hasOwnProperty(key) && opts.hasOwnProperty(key)) {
+            effectiveOptions[key] = opts[key];
       }
     }
   }
