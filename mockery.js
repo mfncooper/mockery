@@ -54,14 +54,19 @@ var m = require('module'),
 function getEffectiveOptions(opts) {
     var options = {};
   
-    for (key, value in defaultOptions) {
-      options[key] = value;
-    }
-    if (opts) {
-      for (key, value in opts) {
+    Object.keys(defaultOptions).forEach(function (key) {
+        options[key] = defaultOptions[key];
+      });
+    
+      if (opts) {
+        Object.keys(opts).forEach(function (key) {
+          options[key] = opts[key];
+        });
+      }
+    
+      for (const [key, value] of Object.entries(opts)) {
         options[key] = value;
       }
-    }
     options = Object.freeze(options);
     return options;
   }
